@@ -27,13 +27,13 @@ In this task you will need to create a GitHub Actions workflow for Conduit API t
 1. Create new workflow file `conduit-api-testing.yml` under the `.github/workflows` folder. 
 2. Define the workflow with two jobs `run-api-tests` and `generate-and-publish-report`. 
 3. The first job `run-api-tests` should:
-- add steps to install the Playwright dependencies: Node.js, npm packages and browsers. 
-- trigger the API tests; 
-- upload the `allure_results` artifact. 
+- Add steps to install the Playwright dependencies: Node.js, npm packages and browsers. 
+- Trigger the API tests; 
+- Upload the `allure_results` artifact. 
 4. The second job `generate-and-publish-report` should: 
-- download the `allure_results` artifact;
-- install JAVA and Allure CLI;
-- generate allure report to the `_site` folder;
+- Download the `allure_results` artifact;
+- Install JAVA and Allure CLI;
+- Generate allure report to the `_site` folder;
 - Upload pages artifact;
 - Deploy to GitHub Pages. (Remember to enable publishing from the GitHub Actions in the Settings > Pages). 
 
