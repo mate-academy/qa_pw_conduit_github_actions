@@ -24,7 +24,7 @@ In this task you will need to create a GitHub Actions workflow for Conduit API t
 
 ## Main Task
 
-1. Create new workflow file `conduit-api-testing.yml` under the `.github/workflows` folder. 
+1. Update the workflow file `conduit-api-testing.yml` under the `.github/workflows` folder. 
 2. Define the workflow with two jobs `run-api-tests` and `generate-and-publish-report`. 
 3. The first job `run-api-tests` should:
 - Add steps to install the Playwright dependencies: Node.js, npm packages and browsers. 
