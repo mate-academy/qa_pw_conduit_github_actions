@@ -1,0 +1,33 @@
+name: Run api tests
+permissions:
+  contents: read
+  id-token: write
+on:
+  push:
+    branches:
+      - main
+      - task_solution
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+jobs:
+  run-api-tests:
+    name: Run API Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+      - name: Install dependencies
+        run: npm install
+      - name: Install playwright
+        run: npx playwright install
+      - name: Run API tests
+        run: npm run test-staging 
+  # generate-and-publish-report:
+  #   name: Generate and Publish Report
+  #   runs-on: ubuntu-latest
