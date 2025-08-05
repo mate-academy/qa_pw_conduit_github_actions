@@ -8,8 +8,6 @@ on:
       - main
       - task_solution
   pull_request:
-    branches:
-      - main
   workflow_dispatch:
 jobs:
   run-api-tests:
