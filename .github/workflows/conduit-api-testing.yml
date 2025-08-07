@@ -50,7 +50,7 @@ jobs:
       - name: Generate Allure report
         run: allure generate -c allure-results -o _site
       - name: Upload generated report
-        uses: actions/upload-pages-artifact
+        uses: actions/upload-pages-artifact@v3
         with:
           name: github-pages
           path: _site
