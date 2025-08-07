@@ -10,7 +10,6 @@ on:
   pull_request:
     branches:
       - main
-  workflow_dispatch:
 jobs:
   run-api-tests:
     name: Run API Tests
