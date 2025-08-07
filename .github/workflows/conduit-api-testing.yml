@@ -2,6 +2,7 @@ name: Run api tests
 permissions:
   contents: read
   id-token: write
+  pages: write
 on:
   push:
     branches:
@@ -48,12 +49,15 @@ jobs:
         uses: actions/download-artifact@v4
       - name: Generate Allure report
         run: allure generate -c allure-results -o _site
-      - name: Store generated report
+      - name: Upload generated report
         uses: actions/upload-artifact@v4
         with:
           name: _site
           path: _site
           retention-days: 1
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
 
 
 
