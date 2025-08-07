@@ -27,7 +27,8 @@ jobs:
       - name: Install playwright
         run: npx playwright install
       - name: Run API tests
-        run: npm run test-staging 
+        run: npm run test-staging
+  # next step
   # generate-and-publish-report:
   #   name: Generate and Publish Report
   #   runs-on: ubuntu-latest
