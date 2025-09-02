@@ -37,6 +37,18 @@ In this task you will need to create a GitHub Actions workflow for Conduit API t
 - Upload pages artifact;
 - Deploy to GitHub Pages. (Remember to enable publishing from the GitHub Actions in the Settings > Pages). 
 
+## Testing Your Pipeline
+
+To complete this task you will need to test that your workflow is working and passing in the GitHub Actions. 
+
+For this you will need to:
+1. Setup the `Settings > Pages > Source: GitHub Actions` in your **forked** repo. 
+2. Create a pull request within your's **forked** repo. 
+3. Test your workflow in this PR. 
+
+Note, that if you run the workflow in the PR to the original repo, it will be failing due to permission issue. 
+Only after you have tested your pipeline within the PR in your forked repo, then you can proceed to the task reporting steps below. 
+
 ## Task Reporting
 
 1. Add and commit all your updates.
