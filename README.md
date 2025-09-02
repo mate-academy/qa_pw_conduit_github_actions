@@ -24,10 +24,10 @@ In this task you will need to create a GitHub Actions workflow for Conduit API t
 
 ## Main Task
 
-1. Create new workflow file `conduit_api_testing.yml` under the `.github/workflows` folder. 
+1. Create a new workflow file `conduit_api_testing.yml` under the `.github/workflows` folder. 
 2. Define the workflow with two jobs `run-api-tests` and `generate-and-publish-report`. 
 3. The first job `run-api-tests` should:
-- Add steps to install the Playwright dependencies: Node.js, npm packages and browsers. 
+- Add steps to install the Playwright dependencies: Node.js, npm packages, and browsers. 
 - Trigger the API tests; 
 - Upload the `allure_results` artifact. 
 4. The second job `generate-and-publish-report` should: 
@@ -39,15 +39,15 @@ In this task you will need to create a GitHub Actions workflow for Conduit API t
 
 ## Testing Your Pipeline
 
-To complete this task you will need to test that your workflow is working and passing in the GitHub Actions. 
+To complete this task, you will need to test that your workflow is working and passing in GitHub Actions. 
 
-For this you will need to:
+For this, you will need to:
 1. Setup the `Settings > Pages > Source: GitHub Actions` in your **forked** repo. 
-2. Create a pull request within your's **forked** repo. 
+2. Create a pull request within your **forked** repo. 
 3. Test your workflow in this PR. 
 
-Note, that if you run the workflow in the PR to the original repo, it will be failing due to permission issue. 
-Only after you have tested your pipeline within the PR in your forked repo, then you can proceed to the task reporting steps below. 
+Note that if you run the workflow in the PR to the original repo, it will fail due to a permission issue in the last publish phase. 
+Only after you have tested the workflow within the PR in your forked repo can you proceed to the task reporting steps below. 
 
 ## Task Reporting
 
