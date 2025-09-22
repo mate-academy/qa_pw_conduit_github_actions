@@ -32,7 +32,7 @@ jobs:
         run: npx playwright test
 
       - name: Upload allure_results
-        if: always()                         # keep results even on failures
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: allure_results
