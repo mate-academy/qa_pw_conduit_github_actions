@@ -1,0 +1,70 @@
+name: Conduit API • Tests & Allure Pages
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+on:
+  push: { branches: [main] }
+  pull_request: { branches: [main] }
+
+concurrency:
+  group: conduit-api-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  run-api-tests:
+    runs-on: ubuntu-latest
+    env:
+      ENV_TYPE: staging
+      CI: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm }
+
+      - run: npm ci
+      - run: npx playwright install --with-deps
+
+      - name: Run API tests
+        run: npx playwright test
+
+      - name: Upload allure_results
+        if: always()                         # keep results even on failures
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure_results
+          path: allure-results
+          if-no-files-found: warn
+          retention-days: 7
+
+  generate-and-publish-report:
+    runs-on: ubuntu-latest
+    needs: run-api-tests
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Download allure_results
+        uses: actions/download-artifact@v4
+        with: { name: allure_results, path: allure-results }
+
+      - name: Setup Java (for Allure CLI)
+        uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: 17 }
+
+      - name: Install Allure CLI
+        run: npm i -g allure-commandline@2
+
+      - name: Generate Allure to _site
+        run: allure generate allure-results --clean -o _site
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with: { path: _site }
+
+      - id: deploy
+        name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v4
