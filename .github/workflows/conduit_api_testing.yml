@@ -6,8 +6,10 @@ permissions:
   id-token: write
 
 on:
-  push: { branches: [main] }
-  pull_request: { branches: [main] }
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 concurrency:
   group: conduit-api-${{ github.ref }}
@@ -19,11 +21,14 @@ jobs:
     env:
       ENV_TYPE: staging
       CI: true
+
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
-        with: { node-version: 20, cache: npm }
+        with:
+          node-version: 20
+          cache: npm
 
       - run: npm ci
       - run: npx playwright install --with-deps
@@ -32,7 +37,7 @@ jobs:
         run: npx playwright test
 
       - name: Upload allure_results
-        if: always()                         # keep results even on failures
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: allure_results
@@ -45,15 +50,24 @@ jobs:
     needs: run-api-tests
     environment:
       name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
+
     steps:
       - name: Download allure_results
         uses: actions/download-artifact@v4
-        with: { name: allure_results, path: allure-results }
+        with:
+          name: allure_results
+          path: allure-results
+
+      - name: Setup Node.js (required for npm install)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
       - name: Setup Java (for Allure CLI)
         uses: actions/setup-java@v4
-        with: { distribution: temurin, java-version: 17 }
+        with:
+          distribution: temurin
+          java-version: 17
 
       - name: Install Allure CLI
         run: npm i -g allure-commandline@2
@@ -63,7 +77,8 @@ jobs:
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
-        with: { path: _site }
+        with:
+          path: _site
 
       - id: deploy
         name: Deploy to GitHub Pages
