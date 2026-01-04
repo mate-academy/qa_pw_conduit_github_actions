@@ -35,7 +35,7 @@ jobs:
         run: npx playwright test
 
       - name: Upload Allure results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: allure_results
           path: allure-results/
@@ -48,7 +48,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Download Allure results
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: allure_results
           path: allure-results/
@@ -62,11 +62,11 @@ jobs:
       - name: Install Allure CLI
         run: |
           curl -o allure-2.21.0.zip -L https://github.com/allure-framework/allure2/releases/download/2.21.0/allure-2.21.0.zip
-          unzip allure-2.21.0.zip -d allure
-          echo "::add-path::${PWD}/allure/bin"
+          unzip allure-2.21.0.zip
+          echo "::add-path::${PWD}/allure-2.21.0/bin"
 
       - name: Generate Allure report
-        run: allure/allure/bin/allure generate allure-results -o _site --clean
+        run: allure generate allure-results -o _site --clean
 
       - name: Upload GitHub Pages artifact
         uses: actions/upload-pages-artifact@v1
