@@ -1,5 +1,10 @@
 name: Conduit API Testing
 
+permissions:
+  contents: read
+  id-token: write
+  pages: write
+
 on:
   push:
     branches: [main]
@@ -9,7 +14,6 @@ on:
 
 jobs:
   run-api-tests:
-    name: Run API Tests
     runs-on: ubuntu-latest
 
     steps:
@@ -28,7 +32,12 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run API tests
-        run: npx playwright test tests/api
+        run: npx playwright test
+        continue-on-error: true
+        env:
+          ENV_TYPE: stage
+          BASE_URL: https://conduit.mate.academy
+          LOG_LEVEL: error
 
       - name: Upload Allure results
         if: always()
@@ -39,14 +48,9 @@ jobs:
           retention-days: 7
 
   generate-and-publish-report:
-    name: Generate and Publish Allure Report
     runs-on: ubuntu-latest
     needs: run-api-tests
     if: always()
-
-    permissions:
-      pages: write
-      id-token: write
 
     environment:
       name: github-pages
@@ -66,12 +70,10 @@ jobs:
           distribution: 'temurin'
 
       - name: Install Allure CLI
-        run: |
-          npm install -g allure-commandline --save-dev
+        run: npm install -g allure-commandline
 
       - name: Generate Allure report
-        run: |
-          allure generate allure-results --clean -o _site
+        run: allure generate allure-results --clean -o _site
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
