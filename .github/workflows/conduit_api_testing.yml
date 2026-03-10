@@ -35,7 +35,7 @@ jobs:
         run: npx playwright test
         continue-on-error: true
         env:
-          ENV_TYPE: stage
+          ENV_TYPE: staging
           BASE_URL: https://conduit.mate.academy
           LOG_LEVEL: error
 
