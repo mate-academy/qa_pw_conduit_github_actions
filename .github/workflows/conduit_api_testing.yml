@@ -1,82 +1,77 @@
 name: Conduit testing workflow
 
 on:
- push:
-   branches:
-     - main
- pull_request:
-   branches:
-     - main
- workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
   run-api-tests:
     runs-on: ubuntu-latest
     steps:
-     - name: Check out the repository
-       uses: actions/checkout@v2
+      - name: Check out the repository
+        uses: actions/checkout@v4
 
-     - name: Install Node.js
-       uses: actions/setup-node@v6
-       with:
-        node-version: 24
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-     - name: Install npm
-       run: npm ci
+      - name: Install npm
+        run: npm ci
 
-     - name: Install browsers
-       run: npx playwright install --with-deps
+      - name: Install browsers
+        run: npx playwright install --with-deps
 
-     - name: Trigger the API tests
-       run: npx playwright test
+      - name: Trigger the API tests
+        run: npx playwright test
 
-     - name: Upload Allure Results as Artifact
-       uses: actions/upload-artifact@v7
-       with:
-         name: allure_results
-         path: allure_results
-
+      - name: Upload Allure Results as Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure_results
+          path: allure_results
 
   generate-and-publish-report:
     runs-on: ubuntu-latest
+    needs: run-api-tests
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-     - name: Check out the repository
-       uses: actions/checkout@v2
+      - name: Check out the repository
+        uses: actions/checkout@v4
 
-     - uses: actions/download-artifact@v8
-       with:
+      - name: Download Allure Results
+        uses: actions/download-artifact@v4
+        with:
           name: allure_results
-    
-     - name: Install Java
-       uses: actions/setup-java@v5
-       with:
-        distribution: 'temurin'
-        java-version: '25'
+          path: allure_results
 
-     - name: Install Allure CLI
-       run: npm install -g allure-commandline
+      - name: Install Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
-     - name: Generate Allure report
-       run: allure generate -c allure_results -o _site
+      - name: Install Allure CLI
+        run: npm install -g allure-commandline
 
-     - name: Store generated report
-       uses: actions/upload-artifact@v4
-       with:
-         name: _site
-         path: _site
-         retention-days: 1
+      - name: Generate Allure report
+        run: allure generate -c allure_results -o _site
 
-  publish-report:
-   name: Report publication
-   needs: generate-and-publish-report
-   runs-on: ubuntu-latest
-   steps:
-    - uses: actions/download-artifact@v4
-      with:
-        name: _site
-        path: _site
-    - uses: actions/upload-pages-artifact@v3
-      with:
-        path: _site
-    - id: deployment
-      uses: actions/deploy-pages@v4
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
