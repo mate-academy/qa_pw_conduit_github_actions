@@ -52,7 +52,7 @@ jobs:
 
      - uses: actions/download-artifact@v8
        with:
-       name: allure_results
+          name: allure_results
     
      - name: Install Java
        uses: actions/setup-java@v5
