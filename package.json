@@ -22,7 +22,7 @@
   },
   "scripts": {
     "prepare": "husky",
-    "test-staging": "ENV_TYPE=staging npx playwright test",
+    "test-staging": "ENV_TYPE=staging npx playwright test ALLURE_RESULTS_DIR=./allure_results",
     "test-staging-ui": "ENV_TYPE=staging npx playwright test --ui"
   },
   "husky": {
