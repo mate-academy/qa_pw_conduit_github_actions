@@ -32,7 +32,7 @@ jobs:
         run: npm run test-stagging
 
       - name: Upload Allure results as artifact
-        if: always() && !canceled()
+        if: always() && !cancelled()
         uses: actions/upload-artifact@7
         with:
           name: allure_results
@@ -40,7 +40,7 @@ jobs:
 
   generate-and-publish-report:
     name: Generate and Publish Report
-    if: always() && !canceled()
+    if: always() && !cancelled()
     needs: run-api-tests
     runs-on: ubuntu-latest
     steps:
