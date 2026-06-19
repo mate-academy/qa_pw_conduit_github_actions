@@ -53,11 +53,11 @@ jobs:
       - name: Download Allure CLI
         run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.43.0/allure-2.43.0.tgz && sudo tar -zxvf allure-2.43.0.tgz -C /opt/ && sudo ln -s /opt/allure-2.43.0/bin/allure /usr/bin/allure
 
-      - name: Download all workflow run artifacts
+      - name: Download Allure results artifact
         uses: actions/download-artifact@v8
-
-      - name: List all files
-        run: ls -R
+        with:
+          name: allure_results
+          path: allure_results
 
       - name: Generate Allure report
         run: allure generate -c allure_results -o _site
