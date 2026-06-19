@@ -23,7 +23,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Setup Node
-        uses: actions/setup-nodev6
+        uses: actions/setup-node@v4
         with:
           node-version: 20
 
