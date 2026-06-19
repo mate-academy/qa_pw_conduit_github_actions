@@ -20,10 +20,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v5
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 20
 
@@ -38,7 +38,7 @@ jobs:
 
       - name: Upload Allure results as artifact
         if: always() && !cancelled()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: allure_results
           path: allure_results
@@ -48,6 +48,9 @@ jobs:
     if: always() && !cancelled()
     needs: run-api-tests
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Setup JAVA
         uses: actions/setup-java@v5
@@ -59,7 +62,7 @@ jobs:
         run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.43.0/allure-2.43.0.tgz && sudo tar -zxvf allure-2.43.0.tgz -C /opt/ && sudo ln -s /opt/allure-2.43.0/bin/allure /usr/bin/allure
 
       - name: Download Allure results artifact
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v4
         with:
           name: allure_results
           path: allure_results
@@ -68,7 +71,7 @@ jobs:
         run: allure generate -c allure_results -o _site
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v5
+        uses: actions/upload-pages-artifact@v3
         with:
           path: _site
 
