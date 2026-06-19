@@ -1,0 +1,70 @@
+name: Test api tests and publish report
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  actions: read
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  run-api-tests:
+    name: Run Api Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v7
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run api tests
+        run: npm run test-stagging
+
+      - name: Upload Allure results as artifact
+        if: always() && !canceled()
+        uses: actions/upload-artifact@7
+        with:
+          name: allure_results
+          path: allure_results
+
+  generate-and-publish-report:
+    name: Generate and Publish Report
+    if: always() && !canceled()
+    needs: run-api-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup JAVA
+        uses: actions/setup-jave@v5
+        with:
+          distribution: 'microsoft'
+          version: '17'
+
+      - name: Download Allure CLI
+        run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.43.0/allure-2.43.0.tgz && sudo tar -zxvf allure-2.43.0.tgz -C /opt/ && sudo ln -s /opt/allure-2.43.0/bin/allure /usr/bin/allure
+
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v8
+
+      - name: Generate Allure report
+        run: allure generate -c allure_results -o _site
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v5
+
+      - name: Deploy Github Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
+
+      - name: Show deploy link
+        run: echo https://vadymchan.github.io/qa_pw_conduit_github_actions
