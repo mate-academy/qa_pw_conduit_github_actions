@@ -9,8 +9,6 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 jobs:
   run-api-tests:
@@ -34,6 +32,10 @@ jobs:
     if: always()
     name: Generate Allure report
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     steps:
       - name: Setup JAVA
         uses: actions/setup-java@v3
@@ -56,7 +58,9 @@ jobs:
           path: _site
           retention-days: 1
       - uses: actions/upload-pages-artifact@v3
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         with:
           path: _site
       - uses: actions/deploy-pages@v4
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         
