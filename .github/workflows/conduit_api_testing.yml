@@ -1,0 +1,72 @@
+name: Conduit API Testing
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  run-api-tests:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci
+      - run: npx playwright install
+      - run: ENV_TYPE=staging npx playwright test  
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure_results
+          path: allure_results
+          if-no-files-found: warn
+
+  generate-and-publish-report:
+    needs: run-api-tests
+    if: always()
+    name: Generate Allure report
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    steps:
+      - name: Setup JAVA
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'microsoft'
+          java-version: '17'
+      - name: Download Allure CLI
+        run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.34.1/allure-2.34.1.tgz && sudo tar -zxvf allure-2.34.1.tgz -C /opt/ && sudo ln -s /opt/allure-2.34.1/bin/allure /usr/bin/allure
+      - name: Download all workflow run artifacts
+        id: download_allure
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: allure_results
+          path: allure_results
+      - name: Generate Allure report
+        if: steps.download_allure.outcome == 'success'
+        run: allure generate -c allure_results -o _site
+      - name: Store generated report
+        if: steps.download_allure.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: _site
+          path: _site
+          retention-days: 1
+      - uses: actions/upload-pages-artifact@v3
+        if: steps.download_allure.outcome == 'success' && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        with:
+          path: _site
+      - uses: actions/deploy-pages@v4
+        if: steps.download_allure.outcome == 'success' && github.event_name == 'push' && github.ref == 'refs/heads/main'
+        
