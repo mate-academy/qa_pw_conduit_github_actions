@@ -24,39 +24,32 @@ jobs:
           path: allure_results
 
   generate-and-publish-report:
-        needs: run-api-tests  
-        name: Generate Allure report
-        runs-on: ubuntu-latest
-        steps:
-          - name: Setup JAVA
-            uses: actions/setup-java@v3
-            with:
-              distribution: 'microsoft'
-              java-version: '17'
-          - name: Download Allure CLI
-            run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.34.1/allure-2.34.1.tgz && sudo tar -zxvf allure-2.34.1.tgz -C /opt/ && sudo ln -s /opt/allure-2.34.1/bin/allure /usr/bin/allure
-          - name: Download all workflow run artifacts
-            uses: actions/download-artifact@v4
-          - name: Generate Allure report
-            run: allure generate -c allure_results -o _site
-          - name: Store generated report
-            uses: actions/upload-artifact@v4
-            with:
-              name: _site
-              path: _site
-              retention-days: 1
-
-              permissions:
-                pages: write
-                id-token: write
-                
-
-              - uses: actions/upload-pages-artifact@v3
-                with:
-                path: _site
-
-              - uses: actions/deploy-pages@v4
-                with:
-                  path: _site
-          - uses: actions/deploy-pages@v4
+    needs: run-api-tests
+    name: Generate Allure report
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - name: Setup JAVA
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'microsoft'
+          java-version: '17'
+      - name: Download Allure CLI
+        run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.34.1/allure-2.34.1.tgz && sudo tar -zxvf allure-2.34.1.tgz -C /opt/ && sudo ln -s /opt/allure-2.34.1/bin/allure /usr/bin/allure
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v4
+      - name: Generate Allure report
+        run: allure generate -c allure_results -o _site
+      - name: Store generated report
+        uses: actions/upload-artifact@v4
+        with:
+          name: _site
+          path: _site
+          retention-days: 1
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - uses: actions/deploy-pages@v4
         
