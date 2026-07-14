@@ -1,0 +1,90 @@
+name: Conduit testing workflow
+
+on:
+ push:
+   branches:
+     - main
+ pull_request:
+   branches:
+     - main
+ workflow_dispatch:
+
+permissions:
+ contents: read
+ pages: write
+ id-token: write
+
+jobs:
+ run-api-tests:
+   name: Run api tests
+   runs-on: ubuntu-latest
+
+   steps:
+     - name: Check out the repository
+       uses: actions/checkout@v4
+
+     - name: Setup Node.js environment
+       uses: actions/setup-node@v4
+
+     - name: Setup Chrome
+       uses: browser-actions/setup-chrome@v2.1.2
+
+     - name: Install npm dependencies
+       run: npm ci
+
+     - name: Install Playwright browsers
+       run: npx playwright install
+
+     - name: Run e2e tests
+       run: |
+         ENV_TYPE=staging npx playwright test
+
+     - name: Upload Allure Results as Artifact
+       if: always() && !cancelled()
+       uses: actions/upload-artifact@v4
+       with:
+         name: allure_results
+         path: allure_results
+
+ generate-and-publish-report:
+   permissions:
+     contents: read
+     pages: write
+     id-token: write
+
+   name: Generate and publish Allure report
+   if: always() && !cancelled()
+   needs: run-api-tests
+   runs-on: ubuntu-latest
+   steps:
+     - name: Setup JAVA
+       uses: actions/setup-java@v3
+       with:
+         distribution: 'microsoft'
+         java-version: '17'
+
+     - name: Download Allure CLI
+       run: sudo wget https://github.com/allure-framework/allure2/releases/download/2.34.1/allure-2.34.1.tgz && sudo tar -zxvf allure-2.34.1.tgz -C /opt/ && sudo ln -s /opt/allure-2.34.1/bin/allure /usr/bin/allure
+
+     - name: Download all workflow run artifacts
+       uses: actions/download-artifact@v4
+       with:
+         name: allure_results
+
+
+     - name: Generate Allure report
+       run: allure generate -c allure_results -o _site
+
+     - name: Store generated report
+       uses: actions/upload-artifact@v4
+       with:
+         name: _site
+         path: _site
+         retention-days: 1
+    
+     - name: Upload Pages artifact
+       uses: actions/upload-pages-artifact@v3
+
+     - name: Deploy to GitHub Pages
+       id: deployment
+       uses: actions/deploy-pages@v4
