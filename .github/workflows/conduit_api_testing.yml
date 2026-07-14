@@ -26,9 +26,6 @@ jobs:
      - name: Setup Node.js environment
        uses: actions/setup-node@v6.5.0
 
-     - name: npm Package Existence Checker
-       uses: directus/npm-package-existence-checker@v1.0.0
-
      - name: Setup Chrome
        uses: browser-actions/setup-chrome@v2.1.2
 
