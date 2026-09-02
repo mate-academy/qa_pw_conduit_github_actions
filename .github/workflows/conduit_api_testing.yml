@@ -1,6 +1,6 @@
 name: conduit_api_testing.yml
 on:
-  push:
+  pull_request:
     branches:
       - main
   workflow_dispatch:
