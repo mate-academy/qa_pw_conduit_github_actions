@@ -49,7 +49,7 @@ jobs:
           path: allure_results
   generate-and-publish-report:
       name: Generate and Publish Allure report
-      if: always() && !cancelled()
+      if: always() && !cancelled() && github.ref == 'refs/heads/main'
       needs: run-api-tests
       runs-on: ubuntu-latest
       environment:
