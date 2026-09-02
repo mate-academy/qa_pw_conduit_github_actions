@@ -1,5 +1,8 @@
 name: conduit_api_testing.yml
 on:
+  push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
