@@ -40,18 +40,13 @@ export class UserBuilder extends BaseBuilder {
   }
 
   generateUsername() {
-    const username = `${this.generateFirstName()}_${this.generateLastName()}`
-      .replaceAll(`'`)
+    return `${this.generateFirstName()}_${this.generateLastName()}`
+      .replace(/[^a-zA-Z0-9_]/g, '')
       .toLowerCase();
-
-    return username;
   }
 
   generateEmail() {
-    const email =
-      `${this.product.username}_${faker.internet.email()}`.toLowerCase();
-
-    return email;
+    return `${this.product.username}_${faker.internet.email()}`.toLowerCase();
   }
 
   generatePassword() {
