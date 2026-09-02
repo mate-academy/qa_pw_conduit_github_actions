@@ -49,7 +49,7 @@ jobs:
           path: allure_results
   generate-and-publish-report:
       name: Generate and Publish Allure report
-      if: always() && !cancelled() && github.ref == 'refs/heads/main'
+      if: always() && !cancelled()
       needs: run-api-tests
       runs-on: ubuntu-latest
       environment:
@@ -78,9 +78,6 @@ jobs:
             path: _site
             retention-days: 1
 
-        - name: Download all workflow run artifacts
-          uses: actions/download-artifact@v4
-
         - name: Upload Pages artifact
           uses: actions/upload-pages-artifact@v3
 
@@ -88,4 +85,4 @@ jobs:
           id: deployment
           uses: actions/deploy-pages@v4
         - name: Show Report Link
-          run: echo "https://boda4ek888.github.io/qa_pw_coffee_cart_github_actions/"
+          run: echo ${{ steps.deployment.outputs.page_url }}
