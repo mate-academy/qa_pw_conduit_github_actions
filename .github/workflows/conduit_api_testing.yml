@@ -8,11 +8,7 @@ on:
       - main
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-  actions: read
+permissions: { contents: read, pages: write, id-token: write }
 
 env:
   ENV_TYPE: 'staging'
@@ -35,6 +31,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install Playwright Browsers
+        run: npx playwright install
+
+      - name: Run API tests
+        run: npx playwright test
+
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
 
@@ -42,9 +44,6 @@ jobs:
         run: |
           mkdir -p $PWD/allure_results
           if [ -d history ]; then cp -r history $PWD/allure_results; fi
-
-      - name: Run API tests
-        run: npx playwright test
 
       - name: Upload Allure Results as Artifact
         if: always() && !cancelled()
