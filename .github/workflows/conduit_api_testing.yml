@@ -17,7 +17,7 @@ permissions:
 jobs:
   run-api-tests:
     name: Run API tests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       - name: Check out the repository
         uses: actions/checkout@v4
