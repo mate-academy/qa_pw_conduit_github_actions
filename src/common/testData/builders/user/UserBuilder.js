@@ -31,27 +31,14 @@ export class UserBuilder extends BaseBuilder {
     this.product.token = token;
   }
 
-  generateFirstName() {
-    return faker.person.firstName();
-  }
-
-  generateLastName() {
-    return faker.person.lastName();
-  }
-
   generateUsername() {
-    const username = `${this.generateFirstName()}_${this.generateLastName()}`
-      .replaceAll(`'`)
-      .toLowerCase();
+    const suffix = faker.string.alphanumeric({ length: 10, casing: 'lower' });
 
-    return username;
+    return `user${suffix}`;
   }
 
   generateEmail() {
-    const email =
-      `${this.product.username}_${faker.internet.email()}`.toLowerCase();
-
-    return email;
+    return `${this.product.username}@example.com`;
   }
 
   generatePassword() {
