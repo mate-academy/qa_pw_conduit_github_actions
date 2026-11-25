@@ -1,0 +1,85 @@
+name: Run api tests
+permissions:
+  contents: read
+  id-token: write
+  pages: write
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  run-api-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install npm packages
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install chromium
+
+      - name: Run API tests
+        run: npm run test-staging
+
+      - name: Upload allure_results artifact
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: allure_results
+          path: allure-results
+          if-no-files-found: error
+          retention-days: 7
+
+  generate-and-publish-report:
+    needs: run-api-tests
+    if: always()
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download allure_results artifact
+        uses: actions/download-artifact@v6
+        with:
+          name: allure_results
+          path: allure_results
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install Allure CLI
+        run: npm install -g allure-commandline
+
+      - name: Generate Allure report
+        run: allure generate allure_results --clean -o _site
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Wait for pages artifact to be registered
+        run: sleep 30
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
